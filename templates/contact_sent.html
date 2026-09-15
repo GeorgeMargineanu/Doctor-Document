@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Am primit mesajul — {{ brand.name }}{% endblock %}
+
+{% block content %}
+<section class="page-hero page-hero-slim">
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="wrap narrow center">
+    <span class="success-mark">{{ icon('check') }}</span>
+    <h1>Am primit mesajul.</h1>
+    <p class="lead">Îl citim și revenim, de regulă în aceeași zi lucrătoare. Dacă situația e urgentă,
+      sună direct la <a href="tel:{{ contact.phone_href }}">{{ contact.phone_display }}</a>.</p>
+    <div class="actions center-actions">
+      <a class="btn btn-primary" href="{{ url_for('home') }}">Înapoi la pagina principală</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

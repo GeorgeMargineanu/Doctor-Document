@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{% block title %}{{ brand.name }}{% endblock %}</title>
+  <meta name="description" content="{% block description %}Consultanță documentară, prelucrare arhivă, extragere date și depozitare în depozit autorizat. Ne spui ce s‑a întâmplat, îți spunem clar ce ai de făcut.{% endblock %}">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon.svg') }}" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<a class="skip" href="#main">Sari la conținut</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="logo" href="{{ url_for('home') }}" aria-label="{{ brand.name }} — acasă">
+      <img src="{{ url_for('static', filename='img/logo.png') }}" alt="{{ brand.name }}" width="1502" height="444">
+    </a>
+
+    <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-label="Deschide meniul">
+    <label for="nav-toggle" class="nav-burger"><span></span></label>
+
+    <nav class="site-nav" aria-label="Navigare principală">
+      {% for s in services %}
+        <a href="{{ url_for('service', slug=s.slug) }}" {% if request.path == url_for('service', slug=s.slug) %}aria-current="page"{% endif %}>{{ s.short }}</a>
+      {% endfor %}
+      <a class="nav-phone" href="tel:{{ contact.phone_href }}">{{ contact.phone_display }}</a>
+      <a class="btn btn-primary btn-sm" href="{{ url_for('contact') }}">Scrie-ne</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <span class="wordmark"><span class="wm-green">Doctor</span> <span class="wm-white">Document</span></span>
+        <p class="footer-tagline">{{ brand.tagline }}</p>
+        <p class="footer-idea">{{ brand.big_idea }}</p>
+      </div>
+
+      <div class="footer-col">
+        <h3>Servicii</h3>
+        <ul>
+          {% for s in services %}
+            <li><a href="{{ url_for('service', slug=s.slug) }}">{{ s.name }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="tel:{{ contact.phone_href }}">{{ contact.phone_display }}</a></li>
+          <li><a href="mailto:{{ contact.email }}">{{ contact.email }}</a></li>
+          <li>{{ contact.address }}</li>
+          <li>{{ contact.hours }}</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© {{ year }} {{ brand.name }} — parte din {{ brand.parent }}</span>
+      <a href="{{ url_for('contact') }}">Spune-ne ce s-a întâmplat →</a>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

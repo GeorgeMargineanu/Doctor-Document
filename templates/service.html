@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}{{ service.name }} — {{ brand.name }}{% endblock %}
+{% block description %}{{ service.card_text }}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="wrap page-hero-grid">
+    <div>
+      <nav class="crumbs" aria-label="Firimituri">
+        <a href="{{ url_for('home') }}">Acasă</a>
+        <span aria-hidden="true">/</span>
+        <span>{{ service.name }}</span>
+      </nav>
+      <p class="pill"><span class="pill-dot"></span>Serviciul {{ service.number }} · {{ service.tagline }}</p>
+      <h1>{{ service.name }}</h1>
+      <p class="lead">{{ service.lead }}</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="{{ url_for('contact') }}">Descrie-ne situația {{ icon('arrow') }}</a>
+        <a class="btn btn-outline" href="tel:{{ contact.phone_href }}">{{ contact.phone_display }}</a>
+      </div>
+    </div>
+
+    <aside class="service-facts" aria-label="Pe scurt">
+      <span class="facts-icon">{{ icon(service.icon) }}</span>
+      <h2>Pe scurt</h2>
+      <ul>
+        {% for h in service.highlights %}
+        <li>{{ icon('check') }} {{ h }}</li>
+        {% endfor %}
+      </ul>
+      <p class="facts-note">{{ service.card_text }}</p>
+    </aside>
+  </div>
+</section>
+
+<section class="service-intro">
+  <div class="wrap narrow">
+    <p class="big-para">{{ service.intro }}</p>
+  </div>
+</section>
+
+<section class="symptoms">
+  <div class="wrap">
+    <header class="section-head">
+      <p class="kicker">Când ne suni</p>
+      <h2>Sună-ne dacă</h2>
+      <p class="section-sub">Dacă te regăsești în oricare dintre situațiile de mai jos, discuția merită purtată.</p>
+    </header>
+    <ul class="symptom-list">
+      {% for s in service.symptoms %}
+      <li>{{ s }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+<section class="how">
+  <div class="wrap">
+    <header class="section-head">
+      <p class="kicker">Cum lucrăm</p>
+      <h2>Ce facem, pas cu pas</h2>
+    </header>
+    <ol class="how-list">
+      {% for step in service.steps %}
+      {% set doc = step[2] if step|length > 2 else none %}
+      <li>
+        <span class="how-num">{{ "%02d"|format(loop.index) }}</span>
+        <div>
+          <h3>{{ step[0] }}</h3>
+          <p>{{ step[1] }}</p>
+          {% if doc %}
+          <a class="doc-link" href="{{ url_for('static', filename=doc.file) }}" download>
+            {{ icon('download') }}<span>{{ doc.label }}</span>
+          </a>
+          {% endif %}
+        </div>
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+</section>
+
+<section class="deliverables">
+  <div class="wrap two-col">
+    <div class="deliv-head">
+      <p class="kicker">Rezultat</p>
+      <h2>Ce rămâne la tine</h2>
+      <p class="section-sub">Concret, la finalul lucrării.</p>
+    </div>
+    <ul class="check-list">
+      {% for d in service.deliverables %}
+      <li>{{ icon('check') }}<span>{{ d }}</span></li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+<section class="note-band">
+  <div class="wrap narrow">
+    <p><span class="stripes" aria-hidden="true"></span>{{ service.note }}</p>
+  </div>
+</section>
+
+<section class="faq">
+  <div class="wrap narrow">
+    <p class="kicker">Întrebări</p>
+    <h2>Ce ne întreabă lumea des</h2>
+    <div class="faq-list">
+      {% for q, a in service.faq %}
+      <details {% if loop.first %}open{% endif %}>
+        <summary>{{ q }}</summary>
+        <p>{{ a }}</p>
+      </details>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="others">
+  <div class="wrap">
+    <header class="section-head">
+      <p class="kicker">Mai departe</p>
+      <h2>Celelalte servicii</h2>
+    </header>
+    <div class="cards cards-3">
+      {% for s in others %}
+      <article class="card">
+        <div class="card-top">
+          <span class="card-icon">{{ icon(s.icon) }}</span>
+          <span class="card-number">{{ s.number }}</span>
+        </div>
+        <h3>{{ s.name }}</h3>
+        <p class="card-text">{{ s.card_text }}</p>
+        <a class="card-link" href="{{ url_for('service', slug=s.slug) }}">
+          Detalii despre serviciu {{ icon('arrow') }}
+        </a>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% include "_cta.html" %}
+{% endblock %}

@@ -1,0 +1,13 @@
+{% from "_icons.html" import icon %}
+<section class="cta">
+  <div class="wrap cta-inner">
+    <div class="cta-copy">
+      <h2>{{ cta.title if cta is defined else "Spune-ne ce s-a întâmplat." }}</h2>
+      <p>{{ cta.lead if cta is defined else "E suficient să descrii situația." }}</p>
+    </div>
+    <div class="cta-actions">
+      <a class="btn btn-light" href="{{ url_for('contact') }}">Scrie-ne {{ icon('arrow') }}</a>
+      <a class="btn btn-outline-light" href="tel:{{ contact.phone_href }}">{{ icon('phone') }} {{ contact.phone_display }}</a>
+    </div>
+  </div>
+</section>

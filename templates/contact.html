@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Contact — {{ brand.name }}{% endblock %}
+{% block description %}Descrie-ne situația în câteva rânduri. Revenim cu întrebările esențiale și cu următorul pas.{% endblock %}
+
+{% block content %}
+<section class="page-hero page-hero-slim">
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="wrap narrow center">
+    <p class="pill"><span class="pill-dot"></span>Contact</p>
+    <h1>Spune‑ne ce s‑a întâmplat</h1>
+    <p class="lead">Nu ai nevoie de termeni tehnici. Descrie situația așa cum ai povesti‑o unui coleg;
+      dacă mai avem nevoie de ceva, întrebăm noi. Apoi fie rezolvăm, fie te îndrumăm.</p>
+  </div>
+</section>
+
+<section class="contact-section">
+  <div class="wrap contact-grid">
+    <form class="contact-form" method="post" action="{{ url_for('contact') }}" novalidate>
+      {% if errors %}
+      <p class="form-error-summary">Mai lipsește ceva. Vezi câmpurile marcate mai jos.</p>
+      {% endif %}
+
+      <div class="field">
+        <label for="nume">Nume <span class="req">*</span></label>
+        <input id="nume" name="nume" type="text" value="{{ form.nume or '' }}" autocomplete="name"
+               {% if errors.nume %}aria-invalid="true"{% endif %}>
+        {% if errors.nume %}<p class="field-error">{{ errors.nume }}</p>{% endif %}
+      </div>
+
+      <div class="field">
+        <label for="organizatie">Organizație <span class="opt">(opțional)</span></label>
+        <input id="organizatie" name="organizatie" type="text" value="{{ form.organizatie or '' }}" autocomplete="organization">
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" value="{{ form.email or '' }}" autocomplete="email"
+                 {% if errors.email %}aria-invalid="true"{% endif %}>
+          {% if errors.email %}<p class="field-error">{{ errors.email }}</p>{% endif %}
+        </div>
+        <div class="field">
+          <label for="telefon">Telefon</label>
+          <input id="telefon" name="telefon" type="tel" value="{{ form.telefon or '' }}" autocomplete="tel">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="mesaj">Ce s-a întâmplat? <span class="req">*</span></label>
+        <textarea id="mesaj" name="mesaj" rows="7"
+                  placeholder="Ex.: ne mutăm din sediu peste două luni și avem o încăpere plină de dosare din 1998 încoace. Nu știm ce conțin și ce avem voie să aruncăm."
+                  {% if errors.mesaj %}aria-invalid="true"{% endif %}>{{ form.mesaj or '' }}</textarea>
+        {% if errors.mesaj %}<p class="field-error">{{ errors.mesaj }}</p>{% endif %}
+      </div>
+
+      <button class="btn btn-primary" type="submit">Trimite {{ icon('arrow') }}</button>
+      <p class="form-note">Folosim datele doar ca să răspundem solicitării tale.</p>
+    </form>
+
+    <aside class="contact-aside">
+      <div class="contact-card">
+        <h2>Direct</h2>
+        <ul class="contact-list">
+          <li>{{ icon('phone') }}<div><span>Telefon</span><a href="tel:{{ contact.phone_href }}">{{ contact.phone_display }}</a></div></li>
+          <li>{{ icon('mail') }}<div><span>Email</span><a href="mailto:{{ contact.email }}">{{ contact.email }}</a></div></li>
+          <li>{{ icon('pin') }}<div><span>Adresă</span>{{ contact.address }}</div></li>
+          <li>{{ icon('clock') }}<div><span>Program</span>{{ contact.hours }}</div></li>
+        </ul>
+      </div>
+      <p class="aside-note">Prima discuție, în care înțelegem problema, nu se tarifează. Dacă urmează o
+        analiză la fața locului, afli costul înainte să începem.</p>
+    </aside>
+  </div>
+</section>
+{% endblock %}

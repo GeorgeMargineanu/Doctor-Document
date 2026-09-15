@@ -1,0 +1,33 @@
+{# Iconuri de linie, fara tema medicala. Stroke = currentColor. #}
+{% macro icon(name) %}
+<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+  {%- if name == "boxes" -%}
+    <path d="M3 7.5 12 3l9 4.5-9 4.5z"/><path d="M3 12l9 4.5 9-4.5"/><path d="M3 16.5 12 21l9-4.5"/>
+  {%- elif name == "scan" -%}
+    <path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8"/><path d="M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8"/>
+    <path d="M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16"/><path d="M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16"/>
+    <path d="M4 12h16"/>
+  {%- elif name == "search" -%}
+    <circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/>
+  {%- elif name == "compass" -%}
+    <circle cx="12" cy="12" r="8.5"/><path d="m15 9-2 4.2-4 1.8 2-4.2z"/>
+  {%- elif name == "shield" -%}
+    <path d="M12 3.5 19 6v6c0 4-3 7-7 8.5C8 19 5 16 5 12V6z"/><path d="m9.2 12 2 2 3.6-3.8"/>
+  {%- elif name == "download" -%}
+    <path d="M12 4v10"/><path d="m8 11 4 4 4-4"/><path d="M5 19h14"/>
+  {%- elif name == "arrow" -%}
+    <path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>
+  {%- elif name == "check" -%}
+    <path d="m5 12.5 4.2 4.2L19 7"/>
+  {%- elif name == "phone" -%}
+    <path d="M6.5 4h3l1.5 4-2 1.4a12 12 0 0 0 5.6 5.6L16 13l4 1.5v3A2.5 2.5 0 0 1 17.3 20 14.5 14.5 0 0 1 4 6.7 2.5 2.5 0 0 1 6.5 4z"/>
+  {%- elif name == "mail" -%}
+    <rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 7 8.5 6 8.5-6"/>
+  {%- elif name == "pin" -%}
+    <path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>
+  {%- elif name == "clock" -%}
+    <circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>
+  {%- endif -%}
+</svg>
+{% endmacro %}

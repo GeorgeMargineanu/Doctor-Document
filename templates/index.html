@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}{{ brand.name }} — consultanță, prelucrare arhivă, extragere date și depozitare{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="pill"><span class="pill-dot"></span>{{ hero.eyebrow }}</p>
+      <h1>{{ hero.title }} <span class="accent">{{ hero.title_accent }}</span></h1>
+      <p class="lead">{{ hero.lead }}</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="{{ url_for('contact') }}">{{ hero.cta_primary }} {{ icon('arrow') }}</a>
+        <a class="btn btn-outline" href="#servicii">{{ hero.cta_secondary }}</a>
+      </div>
+      <p class="hero-phone">Sau sună direct: <a href="tel:{{ contact.phone_href }}">{{ contact.phone_display }}</a></p>
+    </div>
+
+    <div class="hero-visual" aria-hidden="true">
+      <div class="panel">
+        <div class="panel-head">
+          <span class="stripes"></span>
+          <span>Cum arată o discuție cu noi</span>
+        </div>
+        <ol class="panel-steps">
+          {% for num, name, text in process.steps %}
+          <li class="{{ 'is-active' if loop.index == 2 else '' }}">
+            <span class="panel-num">{{ num }}</span>
+            <span class="panel-label">{{ name }}</span>
+            <span class="panel-bar"><i class="w{{ 20 * loop.index }}"></i></span>
+          </li>
+          {% endfor %}
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <ul class="trust">
+      {% for big, small in trust %}
+      <li><b>{{ big }}</b><span>{{ small }}</span></li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+<section class="audiences">
+  <div class="wrap">
+    <header class="section-head">
+      <p class="kicker">De unde pornești</p>
+      <h2>Cu ce vii la noi</h2>
+      <p class="section-sub">Două drumuri diferite, același fel de a lucra.</p>
+    </header>
+
+    <div class="aud-grid">
+      {% for a in audiences %}
+      <article class="aud">
+        <p class="aud-kind">{{ a.kind }}</p>
+        <h3>{{ a.title }}</h3>
+        <p class="aud-lead">{{ a.lead }}</p>
+        <ul>
+          {% for item in a['items'] %}
+          <li>{{ icon('check') }}<span>{{ item }}</span></li>
+          {% endfor %}
+        </ul>
+        <a class="card-link" href="{{ url_for('service', slug=a.slug) }}">{{ a.cta }} {{ icon('arrow') }}</a>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="intro">
+  <div class="wrap intro-grid">
+    <div class="intro-head">
+      <p class="kicker">Ce credem</p>
+      <h2>{{ intro.title }}</h2>
+      <p class="intro-stat">{{ intro.stat }}</p>
+    </div>
+    <div class="intro-body">
+      {% for p in intro.body %}<p>{{ p }}</p>{% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="services" id="servicii">
+  <div class="wrap">
+    <header class="section-head">
+      <p class="kicker">Servicii</p>
+      <h2>Patru feluri de a intra în discuție.</h2>
+      <p class="section-sub">Dacă nu știi care ți se potrivește, începe cu primul.</p>
+    </header>
+
+    <div class="cards">
+      {% for s in services %}
+      <article class="card">
+        <div class="card-top">
+          <span class="card-icon">{{ icon(s.icon) }}</span>
+          <span class="card-number">{{ s.number }}</span>
+        </div>
+        <h3>{{ s.name }}</h3>
+        <p class="card-tagline">{{ s.tagline }}</p>
+        <p class="card-text">{{ s.card_text }}</p>
+        <ul class="chips">
+          {% for h in s.highlights %}<li>{{ h }}</li>{% endfor %}
+        </ul>
+        <a class="card-link" href="{{ url_for('service', slug=s.slug) }}">
+          Detalii despre serviciu {{ icon('arrow') }}
+        </a>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="process">
+  <div class="wrap">
+    <header class="section-head">
+      <p class="kicker">Proces</p>
+      <h2>{{ process.title }}</h2>
+      <p class="section-sub">{{ process.lead }}</p>
+    </header>
+
+    <ol class="steps">
+      {% for num, name, text in process.steps %}
+      <li>
+        <span class="step-num">{{ num }}</span>
+        <h3>{{ name }}</h3>
+        <p>{{ text }}</p>
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+</section>
+
+<section class="promise">
+  <div class="wrap promise-inner">
+    <span class="stripes stripes-light" aria-hidden="true"></span>
+    <p class="promise-text">{{ brand.promise }}</p>
+    <p class="promise-note">Valabil și atunci când discuția nu se termină cu un contract.</p>
+  </div>
+</section>
+
+<section class="values">
+  <div class="wrap">
+    <header class="section-head">
+      <p class="kicker">Valori</p>
+      <h2>Cum lucrăm, de fapt.</h2>
+      <p class="section-sub">Patru valori care se văd în felul în care răspundem la telefon, nu doar pe site.</p>
+    </header>
+    <div class="value-grid">
+      {% for name, text, principle in values %}
+      <div class="value">
+        <h3>{{ name }}</h3>
+        <p>{{ text }}</p>
+        <p class="principle">„{{ principle }}”</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% include "_cta.html" %}
+{% endblock %}

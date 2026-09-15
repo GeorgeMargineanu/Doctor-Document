@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Pagina nu există — {{ brand.name }}{% endblock %}
+
+{% block content %}
+<section class="page-hero page-hero-slim">
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="wrap narrow center">
+    <p class="pill"><span class="pill-dot"></span>Eroare 404</p>
+    <h1>Pagina asta nu există.</h1>
+    <p class="lead">Se întâmplă și cu documentele. Diferența e că pe acelea le găsim.</p>
+    <div class="actions center-actions">
+      <a class="btn btn-primary" href="{{ url_for('home') }}">Pagina principală</a>
+      <a class="btn btn-outline" href="{{ url_for('contact') }}">Contact</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
