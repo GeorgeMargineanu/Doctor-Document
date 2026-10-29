@@ -16,42 +16,51 @@
 
 <section class="contact-section">
   <div class="wrap contact-grid">
-    <form class="contact-form" method="post" action="{{ url_for('contact') }}" novalidate>
-      {% if errors %}
-      <p class="form-error-summary">Mai lipsește ceva. Vezi câmpurile marcate mai jos.</p>
-      {% endif %}
+    {# Formularul trimite prin Web3Forms (vezi FORM_ACCESS_KEY in content.py). Cu JavaScript,
+       validam si trimitem fara sa parasim pagina; fara JavaScript, Web3Forms redirectioneaza
+       singur catre pagina de multumire. #}
+    <form class="contact-form" id="contact-form" method="post" action="https://api.web3forms.com/submit"
+          data-thanks="{{ url_for('contact_sent') }}" novalidate>
+      <input type="hidden" name="access_key" value="{{ form_access_key }}">
+      <input type="hidden" name="subject" value="Mesaj nou de pe site">
+      <input type="hidden" name="from_name" value="Site {{ brand.name }}">
+      <input type="hidden" name="redirect" value="{{ site_url }}{{ url_for('contact_sent') }}">
+
+      <p class="form-error-summary" id="form-error" hidden>Mai lipsește ceva. Vezi câmpurile marcate mai jos.</p>
+
+      {# Capcana anti-spam: ascunsa pentru oameni, bifata de roboti. #}
+      <div class="hp" aria-hidden="true">
+        <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off">
+      </div>
 
       <div class="field">
         <label for="nume">Nume <span class="req">*</span></label>
-        <input id="nume" name="nume" type="text" value="{{ form.nume or '' }}" autocomplete="name"
-               {% if errors.nume %}aria-invalid="true"{% endif %}>
-        {% if errors.nume %}<p class="field-error">{{ errors.nume }}</p>{% endif %}
+        <input id="nume" name="nume" type="text" autocomplete="name">
+        <p class="field-error" data-error-for="nume" hidden></p>
       </div>
 
       <div class="field">
         <label for="organizatie">Organizație <span class="opt">(opțional)</span></label>
-        <input id="organizatie" name="organizatie" type="text" value="{{ form.organizatie or '' }}" autocomplete="organization">
+        <input id="organizatie" name="organizatie" type="text" autocomplete="organization">
       </div>
 
       <div class="field-row">
         <div class="field">
           <label for="email">Email</label>
-          <input id="email" name="email" type="email" value="{{ form.email or '' }}" autocomplete="email"
-                 {% if errors.email %}aria-invalid="true"{% endif %}>
-          {% if errors.email %}<p class="field-error">{{ errors.email }}</p>{% endif %}
+          <input id="email" name="email" type="email" autocomplete="email">
+          <p class="field-error" data-error-for="email" hidden></p>
         </div>
         <div class="field">
           <label for="telefon">Telefon</label>
-          <input id="telefon" name="telefon" type="tel" value="{{ form.telefon or '' }}" autocomplete="tel">
+          <input id="telefon" name="telefon" type="tel" autocomplete="tel">
         </div>
       </div>
 
       <div class="field">
         <label for="mesaj">Ce s-a întâmplat? <span class="req">*</span></label>
         <textarea id="mesaj" name="mesaj" rows="7"
-                  placeholder="Ex.: ne mutăm din sediu peste două luni și avem o încăpere plină de dosare din 1998 încoace. Nu știm ce conțin și ce avem voie să aruncăm."
-                  {% if errors.mesaj %}aria-invalid="true"{% endif %}>{{ form.mesaj or '' }}</textarea>
-        {% if errors.mesaj %}<p class="field-error">{{ errors.mesaj }}</p>{% endif %}
+                  placeholder="Ex.: ne mutăm din sediu peste două luni și avem o încăpere plină de dosare din 1998 încoace. Nu știm ce conțin și ce avem voie să aruncăm."></textarea>
+        <p class="field-error" data-error-for="mesaj" hidden></p>
       </div>
 
       <button class="btn btn-primary" type="submit">Trimite {{ icon('arrow') }}</button>
@@ -73,4 +82,69 @@
     </aside>
   </div>
 </section>
+
+<script>
+(function () {
+  var form = document.getElementById("contact-form");
+  var summary = document.getElementById("form-error");
+  var button = form.querySelector("button[type=submit]");
+
+  function value(name) { return form.elements[name].value.trim(); }
+
+  function showErrors(errors) {
+    form.querySelectorAll("[data-error-for]").forEach(function (p) {
+      var name = p.getAttribute("data-error-for");
+      var input = form.elements[name];
+      if (errors[name]) {
+        p.textContent = errors[name];
+        p.hidden = false;
+        input.setAttribute("aria-invalid", "true");
+      } else {
+        p.hidden = true;
+        input.removeAttribute("aria-invalid");
+      }
+    });
+  }
+
+  function validate() {
+    var errors = {};
+    if (!value("nume")) errors.nume = "Spune-ne cum te cheamă.";
+    if (!value("email") && !value("telefon")) errors.email = "Lasă-ne un email sau un telefon, ca să putem răspunde.";
+    else if (value("email") && value("email").indexOf("@") === -1) errors.email = "Adresa de email pare incompletă.";
+    if (value("mesaj").length < 10) errors.mesaj = "Descrie pe scurt situația, în câteva rânduri.";
+    return errors;
+  }
+
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    var errors = validate();
+    showErrors(errors);
+    if (Object.keys(errors).length) {
+      summary.textContent = "Mai lipsește ceva. Vezi câmpurile marcate mai jos.";
+      summary.hidden = false;
+      summary.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    summary.hidden = true;
+    form.elements.subject.value = "Mesaj nou de pe site — " + value("nume");
+    button.disabled = true;
+
+    fetch(form.action, {
+      method: "POST",
+      headers: { "Accept": "application/json" },
+      body: new FormData(form)
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (!data.success) throw new Error(data.message);
+        window.location.href = form.getAttribute("data-thanks");
+      })
+      .catch(function () {
+        summary.textContent = "Mesajul nu a putut fi trimis. Încearcă din nou sau sună-ne direct.";
+        summary.hidden = false;
+        button.disabled = false;
+      });
+  });
+})();
+</script>
 {% endblock %}

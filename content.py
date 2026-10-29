@@ -18,14 +18,20 @@ BRAND = {
 }
 
 CONTACT = {
-    # TODO: inlocuieste cu datele reale inainte de lansare
-    "phone_display": "+40 700 000 000",
-    "phone_href": "+40700000000",
+    "phone_display": "+40 731 986 722",
+    "phone_href": "+40731986722",
     "email": "contact@doctordocument.ro",
-    "city": "București",
-    "address": "Str. Exemplu nr. 1, București",
+    "address": "Strada Traian Nr 83 Complex Modex Etaj 2",
     "hours": "Luni – vineri, 09:00 – 18:00",
 }
+
+# Adresa publica a site-ului (fara "/" la final).
+SITE_URL = "https://doctordocument.ro"
+
+# Formularul de contact trimite prin Web3Forms (gratuit). Cheia se obtine de pe
+# https://web3forms.com introducand adresa unde vrei sa primesti mesajele; vine pe email.
+# Cheia este publica (apare in pagina), nu e o parola.
+FORM_ACCESS_KEY = "6cd4c630-2399-4e46-8455-5abff6a47d60"
 
 HERO = {
     "eyebrow": "Consultanță · Prelucrare arhivă · Extragere date · Depozitare",

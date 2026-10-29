@@ -1,7 +1,7 @@
 # Doctor Document — site de prezentare
 
 Site Flask, șase pagini: pagina principală (cu cele 4 servicii), câte o pagină per serviciu și contact.
-Fără pas de build, fără bază de date.
+Se scrie în Flask, se publică drept site static (fișiere HTML) pe Cloudflare Pages, gratuit.
 
 Cele patru direcții, în ordinea din meniu: **consultanță**, **prelucrare arhivă** (ordonare,
 inventariere, legătorie, selecționare), **extragere date** (adeverințe de venituri și de grupă de muncă
@@ -18,22 +18,22 @@ este ofertat momentan.
 python -m venv .venv
 .venv\Scripts\activate          # pe macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
-python app.py
+python app.py                   # previzualizare la http://127.0.0.1:5000
+python build.py                 # generează site-ul static în dist/
 ```
-
-Deschide http://127.0.0.1:5000
 
 ## Structura
 
 ```
-app.py              rute (/, /servicii/<slug>/, /contact/)
-content.py          TOT textul site-ului — aici editezi
+app.py              rute (/, /servicii/<slug>/, /contact/) — folosit pentru previzualizare și build
+build.py            generează site-ul static în dist/ (pagini, 404.html, _redirects, static/)
+content.py          TOT textul site-ului — aici editezi; tot aici cheia formularului
 templates/          base.html + o pagină per tip, _icons.html (iconuri SVG), _cta.html
 static/css/style.css  o singură foaie de stil (design system complet)
 static/img/         logo.jpg (original), logo.png (decupat, fundal transparent),
                     logo-full.png (cu tagline), favicon.svg
 static/documents/   formulare descărcabile (cererea de eliberare adeverință)
-data/mesaje.jsonl   mesajele primite din formular (creat automat)
+dist/               site-ul generat, care se urcă pe hosting (nu se urcă în git)
 ```
 
 ## Ce se editează unde
@@ -50,24 +50,50 @@ data/mesaje.jsonl   mesajele primite din formular (creat automat)
 
 ## Formularul de contact
 
-Mesajele se scriu în `data/mesaje.jsonl` (o linie JSON per mesaj). E varianta fără dependințe,
-ca să meargă imediat. Pentru email sau CRM, înlocuiește corpul funcției `save_message()` din `app.py`
-(ex. SMTP prin `smtplib`, un API de mail, sau webhook).
+Formularul trimite direct din browser către **Web3Forms** (gratuit, 250 de mesaje/lună), care
+trimite emailul la adresa asociată cheii. Nu există server, deci nici parole pe server.
 
-Nu există protecție anti-spam. Înainte de lansare merită adăugat un honeypot sau un captcha.
+- Cheia se ia de pe https://web3forms.com: introduci adresa unde vrei să primești mesajele
+  (`contact@vaidaseverin.ro`) și cheia vine pe email. O pui în `FORM_ACCESS_KEY` din `content.py`.
+  Cheia e publică (apare în pagină), nu e o parolă.
+- Câmpul `email` al vizitatorului devine `Reply-To`, deci dai Reply și îi răspunzi lui.
+- Validarea (nume, email sau telefon, mesaj) se face în pagină, cu aceleași mesaje în română.
+- Anti-spam: câmpul ascuns `botcheck`.
 
-## Deploy
+## Publicare (gratuit): Cloudflare Pages + doctordocument.ro
 
-Aplicația e un WSGI standard, `app:app`. Există deja `Procfile`.
+### 1. Domeniul în Cloudflare (o singură dată)
 
-- **Render / Railway / Fly.io**: build `pip install -r requirements.txt`, start `gunicorn app:app`.
-- **PythonAnywhere**: WSGI file care importă `app` din `app.py`.
-- **VPS**: `gunicorn -w 2 -b 127.0.0.1:8000 app:app` în spatele nginx.
+1. Cont gratuit pe https://dash.cloudflare.com → **Add a domain** → `doctordocument.ro` → plan **Free**.
+2. Cloudflare îți dă două nameservere (ceva de forma `xxx.ns.cloudflare.com`).
+3. La firma de unde a fost cumpărat domeniul, la setările domeniului, înlocuiești nameserverele cu
+   cele două de la Cloudflare. Durează de la câteva minute la câteva ore până devine activ.
 
-Pe Windows `gunicorn` nu rulează; local folosește `python app.py`, iar pe server (Linux) gunicorn.
+### 2. Site-ul
 
-Dacă alegi un host care păstrează fișierele efemer (Render free), `data/mesaje.jsonl` se pierde la
-redeploy — încă un motiv să trimiți mesajele pe email.
+1. `python build.py` → apare folderul `dist/`.
+2. Cloudflare → **Workers & Pages** → **Create** → **Pages** → **Upload assets** → nume proiect
+   `doctordocument` → tragi în pagină conținutul folderului `dist/` → **Deploy**.
+   Site-ul apare imediat la `https://doctordocument.pages.dev`.
+3. În proiect → **Custom domains** → adaugi `doctordocument.ro`, apoi și `www.doctordocument.ro`.
+   Cloudflare pune singur DNS-ul și certificatul HTTPS.
+
+La orice modificare: `python build.py` și urci din nou `dist/` (proiectul → **Create deployment**).
+
+### 3. Emailul afișat pe site
+
+Pe site apare `contact@doctordocument.ro` (din `CONTACT` în `content.py`). Ca să primească cineva
+ce se scrie acolo: Cloudflare → domeniul → **Email** → **Email Routing** → creezi
+`contact@doctordocument.ro` cu redirecționare către `contact@vaidaseverin.ro` (gratuit).
+Altfel, schimbi adresa din `content.py` cu una existentă.
+
+### 4. Înainte de a da drumul
+
+- [ ] Datele reale în `CONTACT` din `content.py` (telefon, email, adresă) — acum sunt placeholder.
+- [ ] `FORM_ACCESS_KEY` completat în `content.py`.
+- [ ] Trimis un mesaj real prin formular, de pe telefon, și verificat că ajunge în Inbox, nu în spam.
+- [ ] Decis dacă rămâne „0 lei — diagnostic înainte de orice ofertă" sau se corectează (vezi `TRUST`).
+- [ ] Pagină de politică de confidențialitate, dacă strângi date prin formular (GDPR).
 
 ## Note de brand și design
 
